@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class Table {
-    private String name;//表名
+    private java.lang.String name;//表名
     private File folder;//表所在的文件夹
     private File dictFile;//数据字典
     private LinkedHashSet<File> dataFileSet;
@@ -31,7 +31,6 @@ public class Table {
         this.folder = new File( folderPath+ name);
         this.dictFile = new File(folderPath+name+"\\"+name+ ".dict");
         this.dataFileSet = new LinkedHashSet<>();
-        //this.dataFile = new File(folder + "/data", 1 + ".data");
         this.indexFile = new File(folderPath+name+"\\"+name +".index");
         this.indexMap = new HashMap<>();
     }

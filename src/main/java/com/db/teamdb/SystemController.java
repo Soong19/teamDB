@@ -12,7 +12,6 @@ public class SystemController {
     @PostMapping ("/call")
     public DataMessage socket(String msg) {
         System.out.println(msg);
-        System.out.println(111111);
         return Operating.handleCmd(msg);
     }
 
