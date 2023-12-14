@@ -4,21 +4,21 @@ import java.io.*;
 import java.util.*;
 
 public class Table {
-    private java.lang.String name;//表名
-    private File folder;//表所在的文件夹
-    private File dictFile;//数据字典
+    private java.lang.String name;
+    private File folder;
+    private File dictFile;
     private LinkedHashSet<File> dataFileSet;
-    private File indexFile;//索引文件
-    private Map<String, Field> fieldMap;//字段映射集
-    //存放对所有字段的索引树
+    private File indexFile;
+    private Map<String, Field> fieldMap;
+
     private Map<String, IndexTree> indexMap;
-    private static String userName;//用户姓名，切换或修改用户时修改
-    private static String dbName;//数据库dataBase名，切换时修改
+    private static String userName;
+    private static String dbName;
 
     private static final String folderPath=System.getProperty("user.dir")+"\\src\\main\\resources\\static\\user1\\db1\\";
 
 
-    //控制文件行数
+    // max size of records in each page
     private static final long lineNumConfine = 10;
 
 

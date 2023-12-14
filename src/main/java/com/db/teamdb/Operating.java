@@ -68,7 +68,6 @@ public class Operating {
         Table table = Table.getTable(tableName);
         System.out.println(table.deleteIndex());
         return new DataMessage(1);
-
     }
 
     public static DataMessage select(Matcher matcherSelect) {
