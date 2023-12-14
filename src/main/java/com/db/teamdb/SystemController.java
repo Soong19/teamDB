@@ -2,7 +2,6 @@ package com.db.teamdb;
 
 import org.springframework.web.bind.annotation.*;
 
-//@Controller("web_Socket_system")
 @RestController
 @CrossOrigin
 @RequestMapping("/request")

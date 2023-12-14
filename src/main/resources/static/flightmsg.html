@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+  <title>航班管理系统</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    .section {
+      margin-bottom: 50px;
+    }
+    .section h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">航班管理系统</a>
+    </div>
+  </nav>
+</header>
+<main class="container mt-5">
+  <div class="section">
+    <h2>航班列表</h2>
+    <div class="mb-3">
+      <form id="select">
+        <input type="text" id="sfn" class="form-control" placeholder="输入航班号">
+        <input type="text" id="sft" class="form-control" placeholder="输入起飞时间">
+        <input type="text" id="sfd" class="form-control" placeholder="输入目的地">
+        <button type="submit">查找</button>
+      </form>
+    </div>
+
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>航班号</th>
+        <th>起飞时间</th>
+        <th>目的地</th>
+      </tr>
+      </thead>
+      <tbody id="flightList">
+      <!-- 这里使用JavaScript动态生成航班列表 -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>添加航班</h2>
+    <form id="add">
+      <div class="mb-3">
+        <label for="afn" class="form-label">航班号：</label>
+        <input type="text" id="afn" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="aft" class="form-label">起飞时间：</label>
+        <input type="text" id="aft" class="form-control" placeholder="YYYY-MM-DD hh:mm:ss" required>
+      </div>
+      <div class="mb-3">
+        <label for="afd" class="form-label">目的地：</label>
+        <input type="text" id="afd" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">添加航班</button>
+    </form>
+    <div id="rtn" style="color: red"></div>
+  </div>
+
+  <div class="section">
+    <h2>删除航班</h2>
+    <form id="delete">
+      <div class="mb-3">
+        <label for="dfn" class="form-label">航班号</label>
+        <input type="text" id="dfn" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-danger">删除航班</button>
+    </form>
+
+    <div id = "rtn1" style="color: red"></div>
+  </div>
+
+  <div class="section">
+    <h2>修改航班</h2>
+    <form id="alter">
+      <div class="mb-3">
+        <label for="efn" class="form-label">航班号：</label>
+        <input type="text" id="efn" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label for="eft" class="form-label">起飞时间：</label>
+        <input type="text" id="eft" class="form-control" placeholder="YYYY-MM-DD HH:MM:SS" required>
+      </div>
+      <div class="mb-3">
+        <label for="efd" class="form-label">目的地：</label>
+        <input type="text" id="efd" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-warning">修改航班</button>
+    </form>
+  </div>
+<div id="rtn3" style="color: red"></div>
+</main>
+
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script>
+  $(function(){
+    console.log("opened");
+  });
+
+  $("#select").submit(function(){
+
+    const n = $("#sfn").val();
+    const t = $("#sft").val();
+    const d = $("#sfd").val();
+
+    console.log("clicked");
+    var url = "http://127.0.0.1:8080/request/call";
+    var sql="select * from flights ";
+    if (n.length != 0){
+      alert("1")
+      sql = sql + "where flightNumber='" + n +"'"
+      if (t.length != 0){
+        sql = sql + " and departureTime='" + t +"'"
+        if (d.length != 0){
+          sql = sql + " and destination='" + d +"'"
+        }
+      }
+      else {
+        if(d.length != 0){
+          sql = sql + " and destination='" + d +"'"
+        }
+      }
+    }
+    else {
+      if (t.length != 0){
+        sql = sql + "where departureTime='" + t +"'"
+        if (d.length != 0){
+          sql = sql + " and destination='" + d +"'"
+        }
+      }
+      else {
+        if (d.length != 0){
+          sql = sql + "where destination='" + d +"'"
+        }
+        else {
+          alert("请输入值！")
+          return "wrongly search"
+        }
+      }
+    }
+    alert(+sql)
+
+    var data= {msg:sql};
+    $.ajax({
+      type: "Post",
+      url: url,
+      data: data,
+      contentType: "application/x-www-form-urlencoded;charset=utf8",
+      headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
+      //headers:{'Content-Type':'application/json;charset=utf8'},
+      dataType: "json",
+      success: function (jdata) {
+        // console.log("Status: " + status);
+        console.log(jdata);
+        var tr = $("<tr></tr>");
+        for (var i = 0; i< jdata.length; i++){
+          var flight = jdata[i];
+          var th1 = "<th>" + flight.flightNumber + "</th>";
+          var th2 = "<th>" + flight.departureTime + "</th>";
+          var th3 = "<th>" + flight.destination + "</th>";
+          tr.append(th1);
+          tr.append(th2);
+          tr.append(th3);
+        }
+        $("#flightList").append(tr)
+
+      },
+      error: function (xhr, status) {
+        console.log("Status: " + status);
+        console.log(xhr);
+        window.alert("请求数据失败");
+      }
+    });
+    // $.post({
+    //   url: url,
+    //   data: data,
+    //   // headers:{'Content-Type':'application/json;charset=utf8'},
+    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
+    //   dataType: "json",
+    //   success: function (jdata) {
+    //     console.log("Status: " + status);
+    //     console.log(jdata);
+    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
+    //   },
+    //   error: function (xhr, status) {
+    //     console.log("Status: " + status);
+    //     console.log(xhr);
+    //     window.alert("请求数据失败");
+    //   }
+    // });
+  });
+  $("#add").submit(function(){
+    console.log("clicked");
+    var url = "http://127.0.0.1:8080/request/call";
+    var sql="insert into flights";
+    const n = $("#afn").val();
+    const t = $("#aft").val();
+    const d = $("#afd").val();
+    sql = sql+ "('" +n+ "','" +t+ "','"+d+"')"
+    var data= {msg:sql};
+    alert(sql)
+    $.ajax({
+      type: "Post",
+      url: url,
+      data: data,
+      contentType: "application/x-www-form-urlencoded;charset=utf8",
+      headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
+      //headers:{'Content-Type':'application/json;charset=utf8'},
+      dataType: "json",
+      success: function (jdata) {
+        // console.log("Status: " + status);
+        console.log(jdata);
+        $("#rtn").html("添加成功！");
+      },
+      error: function (xhr, status) {
+        console.log("Status: " + status);
+        console.log(xhr);
+        window.alert("请求数据失败");
+      }
+    });
+    // $.post({
+    //   url: url,
+    //   data: data,
+    //   // headers:{'Content-Type':'application/json;charset=utf8'},
+    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
+    //   dataType: "json",
+    //   success: function (jdata) {
+    //     console.log("Status: " + status);
+    //     console.log(jdata);
+    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
+    //   },
+    //   error: function (xhr, status) {
+    //     console.log("Status: " + status);
+    //     console.log(xhr);
+    //     window.alert("请求数据失败");
+    //   }
+    // });
+  });
+  $("#delete").submit(function(){
+    console.log("clicked");
+    var url = "http://127.0.0.1:8080/request/call";
+    const n = $("#dfn").val();
+    var sql="delete from flights where flightNumber ="+"'" + n+"'";
+    var data= {msg:sql};
+    $.ajax({
+      type: "Post",
+      url: url,
+      data: data,
+      contentType: "application/x-www-form-urlencoded;charset=utf8",
+      headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
+      //headers:{'Content-Type':'application/json;charset=utf8'},
+      dataType: "json",
+      success: function (jdata) {
+        // console.log("Status: " + status);
+        console.log(jdata);
+        $("#rtn1").html("删除成功！");
+      },
+      error: function (xhr, status) {
+        console.log("Status: " + status);
+        console.log(xhr);
+        window.alert("请求数据失败");
+      }
+    });
+    // $.post({
+    //   url: url,
+    //   data: data,
+    //   // headers:{'Content-Type':'application/json;charset=utf8'},
+    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
+    //   dataType: "json",
+    //   success: function (jdata) {
+    //     console.log("Status: " + status);
+    //     console.log(jdata);
+    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
+    //   },
+    //   error: function (xhr, status) {
+    //     console.log("Status: " + status);
+    //     console.log(xhr);
+    //     window.alert("请求数据失败");
+    //   }
+    // });
+  });
+  $("#alter").submit(function(){
+    console.log("clicked");
+    var url = "http://127.0.0.1:8080/request/call";
+    const n = $("#efn").val();
+    const t = $("#eft").val();
+    const d = $("#efd").val();
+    var sql="update flights set departureTime" +t+ ", destination" +d+"where flightNumber="+n;
+    var data= {msg:sql};
+    $.ajax({
+      type: "Post",
+      url: url,
+      data: data,
+      contentType: "application/x-www-form-urlencoded;charset=utf8",
+      headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
+      //headers:{'Content-Type':'application/json;charset=utf8'},
+      dataType: "json",
+      success: function (jdata) {
+        // console.log("Status: " + status);
+        console.log(jdata);
+        $("#rtn3").html("修改成功！");
+      },
+      error: function (xhr, status) {
+        console.log("Status: " + status);
+        console.log(xhr);
+        window.alert("请求数据失败");
+      }
+    });
+    // $.post({
+    //   url: url,
+    //   data: data,
+    //   // headers:{'Content-Type':'application/json;charset=utf8'},
+    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
+    //   dataType: "json",
+    //   success: function (jdata) {
+    //     console.log("Status: " + status);
+    //     console.log(jdata);
+    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
+    //   },
+    //   error: function (xhr, status) {
+    //     console.log("Status: " + status);
+    //     console.log(xhr);
+    //     window.alert("请求数据失败");
+    //   }
+    // });
+  });
+</script>

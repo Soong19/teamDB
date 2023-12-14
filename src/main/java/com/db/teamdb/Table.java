@@ -112,10 +112,7 @@ public class Table {
 
         if (table.indexFile.exists()) {
             table.readIndex();
-        } /*else {
-            table.buildIndex();
-            //table.writeIndex();
-        }*/
+        }
 
         return table;
     }
@@ -190,11 +187,10 @@ public class Table {
             return "错误：不存字段：" + fieldName;
         }
         fieldMap.remove(fieldName);
-       /* //如果删除了最后一条字段，则删除整个表文件
+       //如果删除了最后一条字段，则删除整个表文件
         if (0 == fieldMap.size()) {
             dropTable(this.name);
-        } else {
-        }*/
+        }
         writeDict(fieldMap, false);
 
         return "success";
@@ -211,7 +207,7 @@ public class Table {
                 FileWriter fw = new FileWriter(dictFile, append);
                 PrintWriter pw = new PrintWriter(fw)
         ) {
-            //for (Map.Entry<String, com.db.groupdb.Field> fieldEntry : fields.entrySet()) {
+
             for (Field field : fields.values()) {
                 String name = field.getName();
                 String type = field.getType();
@@ -262,11 +258,9 @@ public class Table {
         }
 
         //遍历data.value和field.type,逐个对比类型
-        //Iterator<String> dataIter = data.values().iterator();
         Iterator<Field> fieldIter = fieldMap.values().iterator();
 
         while (fieldIter.hasNext()) {
-            //String dataValue = dataIter.next();
             Field field = fieldIter.next();
             String dataValue = data.get(field.getName());
             //如果是[NULL]则跳过类型检查
@@ -379,7 +373,7 @@ public class Table {
             for (String value : insertData.values()) {
                 line.append(value).append(" ");
             }
-            pw.println(line.toString());
+            pw.println(line);
         } catch (IOException e) {
             e.printStackTrace();
             return "写入异常";
@@ -549,7 +543,6 @@ public class Table {
      */
     public void delete(List<SingleFilter> singleFilters) {
         //此处查找索引
-        //deleteData(this.dataFile, singleFilters);
         Set<File> fileSet = findFileSet(singleFilters);
         for (File file : fileSet) {
             deleteData(file, singleFilters);

@@ -1,10 +1,10 @@
 package com.db.teamdb;
 
 import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+
 @Component
 public class IndexNode implements Serializable{
 

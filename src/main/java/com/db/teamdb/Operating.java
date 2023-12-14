@@ -15,31 +15,8 @@ public class Operating {
     private static final Pattern PATTERN_SELECT = Pattern.compile("select\\s(\\*|(?:(?:\\w+(?:\\.\\w+)?)+(?:\\s?,\\s?\\w+(?:\\.\\w+)?)*))\\sfrom\\s(\\w+(?:\\s?,\\s?\\w+)*)(?:\\swhere\\s([^\\;]+\\s?;))?");
     private static final Pattern PATTERN_DELETE_INDEX = Pattern.compile("delete\\sindex\\s(\\w+)\\s?;");
 
-    private static User user;
-
-    public static void login() throws Exception{
-        //com.db.groupdb.User user = new com.db.groupdb.User("user1", "abc");
-//        User user = User.getUser("user1");
-//        if (null == user) {
-//            System.out.println("已退出dbms");
-//            return;
-//        } else {
-//            System.out.println(user.getName() + "登陆成功!");
-//        }
-
-        //默认进入user1用户文件夹
-//        File userFolder = new File("dir", user.getName());
-//
-//        //默认进入user1的默认数据库db1
-//        File dbFolder = new File(userFolder, "db1");
-
-//        Operating.user =user;
-
-        Table.init("static/user1","db1");
-    }
 
     public static DataMessage handleCmd(String cmd){
-//        user = User.getUser("user1");
         DataMessage dataMessage = new DataMessage(3);
 
         Matcher matcherInsert = PATTERN_INSERT.matcher(cmd);

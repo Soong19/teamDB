@@ -103,23 +103,6 @@ public enum Relationship {
         } catch (Exception e) {
             e.printStackTrace();
         }
-       /* switch (field.getType()) {
-            case "int":
-                result = Integer.valueOf(srcDataValue).compareTo(Integer.valueOf(condition));
-                break;
-            case "double":
-                result=Double.valueOf(srcDataValue).compareTo(Double.valueOf(condition));
-                break;
-            case "varchar":
-                result=srcDataValue.compareTo(condition);
-                break;
-            default:
-                try {
-                    throw new Exception("条件限定不匹配");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-        }*/
         return compareResult(relationship, result);
     }
 
@@ -128,9 +111,9 @@ public enum Relationship {
      * @param data1 数据1 tableName1.data1型式
      * @param data2 数据2 tableName2.data2型式
      * @param joinCondition 连接关系
-     * @return
+     * @return compareResult(relationship, result) 是否match
      */
-    public static boolean matchJionCondition(Map<String, String> data1,Map<String, String> data2,JoinCondition joinCondition) {
+    public static boolean matchJoinCondition(Map<String, String> data1, Map<String, String> data2, JoinCondition joinCondition) {
         String tableName1 = joinCondition.getTableName1();
         String tableName2 = joinCondition.getTableName2();
 
@@ -148,13 +131,8 @@ public enum Relationship {
             return false;
         }
 
-       /* String dataValue1=dataStr1.split("\\.")[1];
-        String dataValue2=dataStr2.split("\\.")[1];*/
-
         Integer result = null;
 
-       /* String dataValue1 = data1.get(field1.getName());
-        String dataValue2 = data2.get(field2.getName());*/
         //获得类型
         Class typeClass1=TYPE_MAP.get(field1.getType());
         Class typeClass2=TYPE_MAP.get(field2.getType());

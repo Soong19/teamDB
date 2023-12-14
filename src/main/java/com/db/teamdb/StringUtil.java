@@ -9,7 +9,6 @@ public class StringUtil {
     private final static Pattern SINGLE_REL_PATTERN = Pattern.compile("(\\w+(?:\\.\\w+)?)\\s?([<=>])\\s?([^\\s\\;\\.]+)[\\s;]");
     //匹配多个表的连接关系
     private final static Pattern JOIN_CONNECTION_REL_PATTERN = Pattern.compile("(\\w+(?:\\.\\w+)?)\\s?([<=>])\\s?(\\w+\\.\\w+)");
-    // private final static Pattern updateSetPattern=Pattern.compile("(\\w+)\\s?=\\s?([^\\s\\;]+)")
 
     /**
      * 解析投影
@@ -72,7 +71,6 @@ public class StringUtil {
         Matcher singleMatcher = SINGLE_REL_PATTERN.matcher(str + ";");
         while (singleMatcher.find()) {
             Map<String, String> filtMap = new LinkedHashMap<>();
-            //singleMatcher.find();
             filtMap.put("fieldName", singleMatcher.group(1));
             filtMap.put("relationshipName", singleMatcher.group(2));
             filtMap.put("condition", singleMatcher.group(3));
@@ -157,7 +155,6 @@ public class StringUtil {
                 connRel.put("relationshipName", relationshipName);
                 connRel.put("tableName2", rightRel[0]);
                 connRel.put("field2", rightRel[1]);
-//                connRel.put("field2", leftRel[1]);
 
                 joinConditionList.add(connRel);
             }

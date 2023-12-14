@@ -8,6 +8,7 @@ import java.util.Map;
 
 @Component
 public class DataMessage implements Serializable {
+    // 这个类是返回的基础类
     // 0表示初始，1表示成功，2表示无数据，3表示失败
     private int Msg=0;
     private List<String> fieldNames=null;

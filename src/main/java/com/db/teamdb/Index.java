@@ -1,7 +1,5 @@
 package com.db.teamdb;
 
-import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 
 public class Index implements Serializable{

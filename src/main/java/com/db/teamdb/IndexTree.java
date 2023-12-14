@@ -34,9 +34,7 @@ public class IndexTree implements Serializable {
                         indexNodeList.add(node);
                     }
                 }
-                /*for (com.db.groupdb.IndexNode node : indexNodeMap.values()) {
-                    indexNodeList.add(node);
-                }*/
+
                 break;
             case EQUAL_TO:
                 IndexNode indexNode = treeMap.get(condition);
@@ -92,16 +90,4 @@ public class IndexTree implements Serializable {
         indexNode.addIndex(index);
     }
 
-    /*public void buildIndex() {
-        for (String fieldName : fieldMap.keySet()) {
-
-        }
-        File[] dataFiles=new File(folder, "data").listFiles();
-        for (File dataFile : dataFiles) {
-            List<Map<String,String>> datas=readDatas(dataFile);
-            for (Map<String, String> data : datas) {
-
-            }
-        }
-    }*/
 }

@@ -13,8 +13,8 @@ public class IndexKey implements Comparable, Serializable {
 
 
     @Override
-    public int compareTo(Object ohterValue) {
-        String keyValue = ((IndexKey) ohterValue).getValue();
+    public int compareTo(Object otherValue) {
+        String keyValue = ((IndexKey) otherValue).getValue();
         try {
             switch (type) {
                 case "int":

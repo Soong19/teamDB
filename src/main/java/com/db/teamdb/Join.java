@@ -91,11 +91,10 @@ public class Join {
         for (Map<String, String> srcLine : srcProduct) {
             for (Map<String, String> joinLine : joinProduct) {
                 //如果与条件匹配,添加此行
-                if(Relationship.matchJionCondition(srcLine, joinLine, joinCondition)) {
+                if(Relationship.matchJoinCondition(srcLine, joinLine, joinCondition)) {
                     Map<String, String> newLine = new LinkedHashMap<>();
                     newLine.putAll(srcLine);
                     newLine.putAll(joinLine);
-                    // srcLine.putAll(joinLine);
                     result.add(newLine);
                 }
             }
