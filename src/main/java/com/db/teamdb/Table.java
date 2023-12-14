@@ -15,7 +15,7 @@ public class Table {
     private static String userName;//用户姓名，切换或修改用户时修改
     private static String dbName;//数据库dataBase名，切换时修改
 
-    private static final String folderPath="D:\\Programming\\Project\\teamDB\\src\\main\\resources\\static\\user1\\db1\\";
+    private static final String folderPath=System.getProperty("user.dir")+"\\src\\main\\resources\\static\\user1\\db1\\";
 
 
     //控制文件行数

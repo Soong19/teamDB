@@ -29,24 +29,16 @@
     <div class="mb-3">
       <form id="select">
         <input type="text" id="sfn" class="form-control" placeholder="输入航班号">
-        <input type="text" id="sft" class="form-control" placeholder="输入起飞时间">
+        <input type="text" id="sfts" class="form-control" placeholder="输入航班开始日期:YYYY-MM-DD">
+        <input type="text" id="sfte" class="form-control" placeholder="输入航班最后日期:YYYY-MM-DD">
         <input type="text" id="sfd" class="form-control" placeholder="输入目的地">
         <input type="button" id="submit" value="search" onclick="query()"/>
 <!--        <button type="submit">查找</button>-->
       </form>
     </div>
 
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>航班号</th>
-        <th>起飞时间</th>
-        <th>目的地</th>
-      </tr>
-      </thead>
-      <tbody id="flightList">
-      <!-- 这里使用JavaScript动态生成航班列表 -->
-      </tbody>
+    <table class="table table-striped" id="flightList">
+
     </table>
   </div>
 
@@ -59,13 +51,14 @@
       </div>
       <div class="mb-3">
         <label for="aft" class="form-label">起飞时间：</label>
-        <input type="text" id="aft" class="form-control" placeholder="YYYY-MM-DD hh:mm:ss" required>
+        <input type="text" id="aft" class="form-control" placeholder="YYYY-MM-DD_HH:MM" required>
       </div>
       <div class="mb-3">
         <label for="afd" class="form-label">目的地：</label>
         <input type="text" id="afd" class="form-control" required>
       </div>
-      <button type="submit" class="btn btn-primary">添加航班</button>
+      <input type="button" class="btn btn-primary" value="add" onclick="add()"/>
+<!--      <button type="submit" class="btn btn-primary">添加航班</button>-->
     </form>
     <div id="rtn" style="color: red"></div>
   </div>
@@ -77,14 +70,16 @@
         <label for="dfn" class="form-label">航班号</label>
         <input type="text" id="dfn" class="form-control" required>
       </div>
-      <button type="submit" class="btn btn-danger">删除航班</button>
+<!--      <button type="submit" class="btn btn-danger">删除航班</button>-->
+      <input type="button" class="btn btn-danger" value="delete" onclick="deleteFlight()"/>
     </form>
 
     <div id = "rtn1" style="color: red"></div>
   </div>
 
   <div class="section">
-    <h2>修改航班</h2>
+    <h1>修改航班</h1>
+    <h5>按照航班号修改航班时间或航班目的地</h5><br>
     <form id="alter">
       <div class="mb-3">
         <label for="efn" class="form-label">航班号：</label>
@@ -92,126 +87,133 @@
       </div>
       <div class="mb-3">
         <label for="eft" class="form-label">起飞时间：</label>
-        <input type="text" id="eft" class="form-control" placeholder="YYYY-MM-DD HH:MM:SS" required>
+        <input type="text" id="eft" class="form-control" placeholder="YYYY-MM-DD_HH:MM" required>
       </div>
       <div class="mb-3">
         <label for="efd" class="form-label">目的地：</label>
         <input type="text" id="efd" class="form-control" required>
       </div>
-      <button type="submit" class="btn btn-warning">修改航班</button>
+      <input type="button" value="modify" onclick="updateFlight()"/>
     </form>
   </div>
 <div id="rtn3" style="color: red"></div>
+<!--  <input type="button" value="create and insert" onclick="candin()"/>-->
 </main>
 
 <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 <script>
   $(function(){
     console.log("opened");
-  });
+  })
+
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max)+100;
+  }
 
   function query() {
-  //
-  // }
-  // $("#select").submit(function(){
-
     const n = $("#sfn").val();
-    const t = $("#sft").val();
+    const ts = $("#sfts").val();
+    const te = $("#sfte").val();
     const d = $("#sfd").val();
 
     console.log("clicked");
     var url = "http://127.0.0.1:8080/request/call";
     var sql="select * from flights ";
-    if (n.length != 0){
-      sql = sql + "where flightNumber=" + n
-      if (t.length != 0){
-        sql = sql + " and departureTime=" + t
-        if (d.length != 0){
-          sql = sql + " and destination=" + d
-        }
-      }
-      else {
-        if(d.length != 0){
-          sql = sql + " and destination=" + d
-        }
+    var conditionList=[]
+
+    if (ts.length!==0 && te.length!==0){
+      if (ts>=te){
+        window.alert("开始日期需要小于结束日期")
+        return
       }
     }
-    else {
-      if (t.length != 0){
-        sql = sql + "where departureTime=" + t
-        if (d.length != 0){
-          sql = sql + " and destination=" + d
-        }
-      }
-      else {
-        if (d.length != 0){
-          sql = sql + "where destination=" + d
-        }
-        else {
-          alert("请输入值！")
-          return "wrongly search"
+
+    if (n.length+ts.length+te.length+d.length >0){
+      sql=sql+"where"
+      if(n.length!==0)conditionList.push(" flightNumber="+n)
+      if (ts.length!==0)conditionList.push(" departureTime>"+ts)
+      if (te.length!==0)conditionList.push(" departureTime<"+te)
+      if (d.length!==0)conditionList.push(" destination="+d)
+      for (i = 0; i < conditionList.length; i++) {
+        sql=sql+conditionList[i]
+        if (i!==conditionList.length-1){
+          sql=sql+" and"
         }
       }
     }
     console.log(sql)
-
-    var data= {msg:sql+';'};
+    const data = {msg: sql + ';'};
     $.ajax({
       type: "Post",
       url: url,
       data: data,
       contentType: "application/x-www-form-urlencoded;charset=utf8",
       headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
-      //headers:{'Content-Type':'application/json;charset=utf8'},
       dataType: "json",
       success: function (jdata) {
-        // console.log("Status: " + status);
         console.log(jdata);
         console.log(jdata.data)
-        var tr = $("<tr></tr>");
-
+        $("#flightList").html("")
+        // var tr = $("<tr></tr>");
+        var tr = $("<tbody>");
+        tr.append("<tr>")
+        tr.append("<th>No.</th>");
+        tr.append("<th>Flight Number</th>");
+        tr.append("<th>Flight DateTime</th>");
+        tr.append("<th>Flight Destination</th>");
+        tr.append("</tr>")
         for (var i = 0; i< jdata.count; i++){
           var flight = jdata.data[i]
+          // var flighttime=flight['flights.departureTime']
           console.log(flight['flights.flightNumber'])
-          var th1 = "<th>" + flight['flights.flightNumber'] + "</th>";
-          var th2 = "<th>" + flight['flights.departureTime'] + "</th>";
-          var th3 = "<th>" + flight['flights.destination'] + "</th>";
+          var th0 = "<td>" + i + "</td>";
+          var th1 = "<td>" + flight['flights.flightNumber'] + "</td>";
+          var th2 = "<td>" + flight['flights.departureTime'] + "</td>";
+          var th3 = "<td>" + flight['flights.destination'] + "</td>";
+          tr.append("<tr>")
+          tr.append(th0)
           tr.append(th1);
           tr.append(th2);
           tr.append(th3);
+          tr.append("</tr>")
         }
+        tr.append("</tbody>")
         $("#flightList").append(tr)
+        // tr = $("");
         console.log(tr)
 
       },
       error: function (xhr, status) {
-        alert(111)
         console.log("Status: " + status);
         console.log(xhr);
         window.alert("请求数据失败");
       }
     });
-  };
-  $("#add").submit(function(){
+  }
+
+  function add(){
     console.log("clicked");
-    var url = "http://127.0.0.1:8080/request/call";
     var sql="insert into flights(id,flightNumber,departureTime,destination) values";
     const n = $("#afn").val();
     const t = $("#aft").val();
     const d = $("#afd").val();
-    sql = sql+ "("+ "10"+"," +n+ "," +t+ ","+d+");"
-    var data= {msg:sql};
-    alert(sql)
+    const idx=getRandomInt(10000);
+
+    if (n.length===0 || t.length===0 ||d.length===0){
+      window.alert("请输入完整信息")
+      return
+    }
+
+    sql = sql+ "("+ idx +"," +n+ "," +t+ ","+d+");"
+    const data = {msg: sql};
     $.ajax({
       type: "Post",
-      url: url,
+      url: "http://127.0.0.1:8080/request/call",
       data: data,
       contentType: "application/x-www-form-urlencoded;charset=utf8",
       headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
-      //headers:{'Content-Type':'application/json;charset=utf8'},
       dataType: "json",
       success: function (jdata) {
-        // console.log("Status: " + status);
         console.log(jdata);
         $("#rtn").html("添加成功！");
       },
@@ -221,40 +223,28 @@
         window.alert("请求数据失败");
       }
     });
-    // $.post({
-    //   url: url,
-    //   data: data,
-    //   // headers:{'Content-Type':'application/json;charset=utf8'},
-    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
-    //   dataType: "json",
-    //   success: function (jdata) {
-    //     console.log("Status: " + status);
-    //     console.log(jdata);
-    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
-    //   },
-    //   error: function (xhr, status) {
-    //     console.log("Status: " + status);
-    //     console.log(xhr);
-    //     window.alert("请求数据失败");
-    //   }
-    // });
-  });
-  $("#delete").submit(function(){
+  }
+
+  function deleteFlight(){
     console.log("clicked");
-    var url = "http://127.0.0.1:8080/request/call";
     const n = $("#dfn").val();
-    var sql="delete from flights where flightNumber ="+"'" + n+"'"+";";
-    var data= {msg:sql};
+
+    if (n.length===0){
+      window.alert("请输入航班号")
+      return;
+    }
+
+    var sql="delete from flights where flightNumber="+n+";"
+    const data = {msg: sql};
+
     $.ajax({
       type: "Post",
-      url: url,
+      url: "http://127.0.0.1:8080/request/call",
       data: data,
       contentType: "application/x-www-form-urlencoded;charset=utf8",
       headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
-      //headers:{'Content-Type':'application/json;charset=utf8'},
       dataType: "json",
       success: function (jdata) {
-        // console.log("Status: " + status);
         console.log(jdata);
         $("#rtn1").html("删除成功！");
       },
@@ -264,42 +254,42 @@
         window.alert("请求数据失败");
       }
     });
-    // $.post({
-    //   url: url,
-    //   data: data,
-    //   // headers:{'Content-Type':'application/json;charset=utf8'},
-    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
-    //   dataType: "json",
-    //   success: function (jdata) {
-    //     console.log("Status: " + status);
-    //     console.log(jdata);
-    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
-    //   },
-    //   error: function (xhr, status) {
-    //     console.log("Status: " + status);
-    //     console.log(xhr);
-    //     window.alert("请求数据失败");
-    //   }
-    // });
-  });
-  $("#alter").submit(function(){
+  }
+
+  function updateFlight(){
     console.log("clicked");
     var url = "http://127.0.0.1:8080/request/call";
     const n = $("#efn").val();
     const t = $("#eft").val();
     const d = $("#efd").val();
-    var sql="update flights set departureTime" +t+ ", destination" +d+"where flightNumber="+n;
-    var data= {msg:sql};
+    var sql="update flights set "
+    if (n.length===0){
+      window.alert("请输入航班号")
+      return;
+    }else{
+      if (t.length!==0 && d.length!==0){
+        sql=sql+"departureTime="+t+ ",destination=" +d+" where flightNumber="+n;
+      }
+      else if (t.length!==0 && d.length===0){
+        sql=sql+"departureTime="+t+" where flightNumber="+n;
+      }
+      else if (t.length===0 && d.length!==0){
+        sql=sql+"destination="+d+" where flightNumber="+n;
+      }else{
+        window.alert("请输入新的时间或目的地")
+        return;
+      }
+    }
+
+    var data= {msg:sql+';'};
     $.ajax({
       type: "Post",
       url: url,
       data: data,
       contentType: "application/x-www-form-urlencoded;charset=utf8",
       headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
-      //headers:{'Content-Type':'application/json;charset=utf8'},
       dataType: "json",
       success: function (jdata) {
-        // console.log("Status: " + status);
         console.log(jdata);
         $("#rtn3").html("修改成功！");
       },
@@ -309,22 +299,53 @@
         window.alert("请求数据失败");
       }
     });
-    // $.post({
-    //   url: url,
-    //   data: data,
-    //   // headers:{'Content-Type':'application/json;charset=utf8'},
-    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
-    //   dataType: "json",
-    //   success: function (jdata) {
-    //     console.log("Status: " + status);
-    //     console.log(jdata);
-    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
-    //   },
-    //   error: function (xhr, status) {
-    //     console.log("Status: " + status);
-    //     console.log(xhr);
-    //     window.alert("请求数据失败");
-    //   }
-    // });
-  });
+  }
+
+  function candin(){
+    const sqlList= [
+      "create table flights(id int *,flightNumber varchar,departureTime varchar,destination varchar);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(1,HX254,2023-12-14_13:50,Taipei);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(2,BR2900,2023-12-14_13:50,Taipei);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(3,CX261,2023-12-13_00:05,Paris);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(4,AY5095,2023-12-13_00:25,Melbourne);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(5,CX366,2023-12-13_07:30,Shanghai);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(6,MH9210,2023-12-16_03:20,NewYork);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(7,SQ895,2023-12-16_18:50,Singapore);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(8,CA112,2023-12-15_14:35,Beijing);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(9,AK137,2023-12-15_18:15,KualaLumpur);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(10,PR319,2023-12-17_13:25,Manila);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(23,SZ777,2023-12-19_13:50,Manila);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(25,GT195,2023-12-20_11:47,Taipei);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(78,NF233,2023-12-17_23:10,Taipei);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(92,PX382,2024-1-1_05:20,Beijing);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(1192,QF275,2023-12-30_18:09,Shanghai);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(11,AF185,2023-12-15_22:40,Paris);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(12,QF4223,2023-12-16_15:40,Paris);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(13,MU726,2023-12-17_07:40,Shanghai);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(14,HU8359,2023-12-14_13:00,Shanghai);",
+      "insert into flights(id,flightNumber,departureTime,destination) VALUES(15,AA8942,2023-12-17_11:40,Singapore);"]
+
+
+    for(i=0;i<sqlList.length;i++){
+      var sql=sqlList[i]
+      const data={msg:sql}
+      window.alert(sql)
+      $.ajax({
+        type: "Post",
+        url: "http://127.0.0.1:8080/request/call",
+        data: data,
+        contentType: "application/x-www-form-urlencoded;charset=utf8",
+        headers:{'Access-Control-Allow-Headers':'*',"Access-Control-Allow-Origin":"*"},
+        dataType: "json",
+        success: function (jdata) {
+          console.log(jdata);
+        },
+        error: function (xhr, status) {
+          console.log("Status: " + status);
+          console.log(xhr);
+          window.alert("请求数据失败");
+        }
+      });
+    }
+  }
 </script>
