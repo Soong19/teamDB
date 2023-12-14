@@ -1,3 +1,4 @@
 id int *
-name varchar ^
-date varchar ^
+flightNumber varchar ^
+departureTime varchar ^
+destination varchar ^

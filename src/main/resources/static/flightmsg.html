@@ -31,7 +31,8 @@
         <input type="text" id="sfn" class="form-control" placeholder="输入航班号">
         <input type="text" id="sft" class="form-control" placeholder="输入起飞时间">
         <input type="text" id="sfd" class="form-control" placeholder="输入目的地">
-        <button type="submit">查找</button>
+        <input type="button" id="submit" value="search" onclick="query()"/>
+<!--        <button type="submit">查找</button>-->
       </form>
     </div>
 
@@ -109,7 +110,10 @@
     console.log("opened");
   });
 
-  $("#select").submit(function(){
+  function query() {
+  //
+  // }
+  // $("#select").submit(function(){
 
     const n = $("#sfn").val();
     const t = $("#sft").val();
@@ -119,30 +123,29 @@
     var url = "http://127.0.0.1:8080/request/call";
     var sql="select * from flights ";
     if (n.length != 0){
-      alert("1")
-      sql = sql + "where flightNumber='" + n +"'"
+      sql = sql + "where flightNumber=" + n
       if (t.length != 0){
-        sql = sql + " and departureTime='" + t +"'"
+        sql = sql + " and departureTime=" + t
         if (d.length != 0){
-          sql = sql + " and destination='" + d +"'"
+          sql = sql + " and destination=" + d
         }
       }
       else {
         if(d.length != 0){
-          sql = sql + " and destination='" + d +"'"
+          sql = sql + " and destination=" + d
         }
       }
     }
     else {
       if (t.length != 0){
-        sql = sql + "where departureTime='" + t +"'"
+        sql = sql + "where departureTime=" + t
         if (d.length != 0){
-          sql = sql + " and destination='" + d +"'"
+          sql = sql + " and destination=" + d
         }
       }
       else {
         if (d.length != 0){
-          sql = sql + "where destination='" + d +"'"
+          sql = sql + "where destination=" + d
         }
         else {
           alert("请输入值！")
@@ -150,9 +153,9 @@
         }
       }
     }
-    alert(+sql)
+    console.log(sql)
 
-    var data= {msg:sql};
+    var data= {msg:sql+';'};
     $.ajax({
       type: "Post",
       url: url,
@@ -164,51 +167,39 @@
       success: function (jdata) {
         // console.log("Status: " + status);
         console.log(jdata);
+        console.log(jdata.data)
         var tr = $("<tr></tr>");
-        for (var i = 0; i< jdata.length; i++){
-          var flight = jdata[i];
-          var th1 = "<th>" + flight.flightNumber + "</th>";
-          var th2 = "<th>" + flight.departureTime + "</th>";
-          var th3 = "<th>" + flight.destination + "</th>";
+
+        for (var i = 0; i< jdata.count; i++){
+          var flight = jdata.data[i]
+          console.log(flight['flights.flightNumber'])
+          var th1 = "<th>" + flight['flights.flightNumber'] + "</th>";
+          var th2 = "<th>" + flight['flights.departureTime'] + "</th>";
+          var th3 = "<th>" + flight['flights.destination'] + "</th>";
           tr.append(th1);
           tr.append(th2);
           tr.append(th3);
         }
         $("#flightList").append(tr)
+        console.log(tr)
 
       },
       error: function (xhr, status) {
+        alert(111)
         console.log("Status: " + status);
         console.log(xhr);
         window.alert("请求数据失败");
       }
     });
-    // $.post({
-    //   url: url,
-    //   data: data,
-    //   // headers:{'Content-Type':'application/json;charset=utf8'},
-    //   contentType: "application/x-www-form-urlencoded;charset=utf8",
-    //   dataType: "json",
-    //   success: function (jdata) {
-    //     console.log("Status: " + status);
-    //     console.log(jdata);
-    //     $("#rtn").html("返回结果：" + JSON.stringify(jdata));
-    //   },
-    //   error: function (xhr, status) {
-    //     console.log("Status: " + status);
-    //     console.log(xhr);
-    //     window.alert("请求数据失败");
-    //   }
-    // });
-  });
+  };
   $("#add").submit(function(){
     console.log("clicked");
     var url = "http://127.0.0.1:8080/request/call";
-    var sql="insert into flights";
+    var sql="insert into flights(id,flightNumber,departureTime,destination) values";
     const n = $("#afn").val();
     const t = $("#aft").val();
     const d = $("#afd").val();
-    sql = sql+ "('" +n+ "','" +t+ "','"+d+"')"
+    sql = sql+ "("+ "10"+"," +n+ "," +t+ ","+d+");"
     var data= {msg:sql};
     alert(sql)
     $.ajax({
@@ -252,7 +243,7 @@
     console.log("clicked");
     var url = "http://127.0.0.1:8080/request/call";
     const n = $("#dfn").val();
-    var sql="delete from flights where flightNumber ="+"'" + n+"'";
+    var sql="delete from flights where flightNumber ="+"'" + n+"'"+";";
     var data= {msg:sql};
     $.ajax({
       type: "Post",
